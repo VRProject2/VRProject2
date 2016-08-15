@@ -24,13 +24,17 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 	UPROPERTY(EditAnywhere)
-	USceneComponent *ourVisibleComponent;
+	USceneComponent *ourVisibleModelComponent;
 	UPROPERTY(EditAnywhere)
-		USceneComponent *ourVisibleModelComponent;
+	USkeletalMeshComponent *ourVisibleStopModelComponent;
+/*
+	UPROPERTY(EditAnywhere)
+	USkeletalMeshComponent *skeletalMesh;*/
 
 	void MoveX(float moveRange);
 	void MoveY(float moveRange);
 
 	FVector currentVelocity;
 	FRotator currentRotation;
+	bool visible;
 };

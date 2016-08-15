@@ -18,13 +18,14 @@ AMyPawn::AMyPawn()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 
 	UCameraComponent *ourCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
-	ourVisibleComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	ourVisibleModelComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
+	ourVisibleStopModelComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("StopSkeletalMeshComponent"));
 	ourCamera->AttachTo(RootComponent);
 	ourCamera->SetRelativeLocation(FVector(-250.0f, 0.0f, 250.0f));
 	ourCamera->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
-	ourVisibleComponent->AttachTo(RootComponent);
+	
 	ourVisibleModelComponent->AttachTo(RootComponent);
+	ourVisibleStopModelComponent->AttachTo(RootComponent);
 }
 
 void AMyPawn::MoveY(float moveRange)
@@ -52,15 +53,33 @@ void AMyPawn::BeginPlay()
 void AMyPawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+	bool isMoved = false;
 	if (!currentVelocity.IsZero())
 	{
 		FVector newLocation = GetActorLocation() + (currentVelocity * DeltaTime);
 		SetActorLocation(newLocation);
+		isMoved = true;
 	}
 	if (!currentRotation.IsZero())
 	{
 		FRotator newRotation = GetActorRotation() + (currentRotation * DeltaTime);
 		SetActorRotation(newRotation);
+		isMoved = true;
+	}
+	if (!isMoved)//dont move
+	{
+		if (!ourVisibleStopModelComponent->IsPlaying())
+		{
+			ourVisibleStopModelComponent->Play(false);
+		}
+		ourVisibleModelComponent->SetVisibility(isMoved, true);
+		ourVisibleStopModelComponent->SetVisibility(!isMoved, true);
+	}
+	else//move
+	{
+		ourVisibleModelComponent->SetVisibility(isMoved, true);
+		ourVisibleStopModelComponent->SetPosition(0.0F, true);
+		ourVisibleStopModelComponent->SetVisibility(!isMoved, true);
 	}
 	//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TEXT("Hello World %d"), DeltaTime);
 }
@@ -71,5 +90,6 @@ void AMyPawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 	Super::SetupPlayerInputComponent(InputComponent);
 	InputComponent->BindAxis("MoveX", this, &AMyPawn::MoveX);
 	InputComponent->BindAxis("MoveY", this, &AMyPawn::MoveY);
+	
 }
 
