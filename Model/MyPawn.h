@@ -27,14 +27,17 @@ public:
 	USceneComponent *ourVisibleModelComponent;
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent *ourVisibleStopModelComponent;
-/*
 	UPROPERTY(EditAnywhere)
-	USkeletalMeshComponent *skeletalMesh;*/
+	USpringArmComponent *ourCameraSpringArm;
+	UCameraComponent *ourCamera;
 
 	void MoveX(float moveRange);
 	void MoveY(float moveRange);
+	void PitchCamera(float range);
+	void YawCamera(float range);
 
 	FVector currentVelocity;
+	FVector cameraVector;
 	FRotator currentRotation;
 	bool visible;
 };
